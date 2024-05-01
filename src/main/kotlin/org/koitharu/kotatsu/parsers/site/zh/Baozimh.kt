@@ -27,6 +27,8 @@ internal class Baozimh(context: MangaLoaderContext) :
 
 	private val tagsMap = SuspendLazy(::parseTags)
 
+	private val tags = mapOf("全部" to "all", "恋爱" to "lianai", "纯爱" to "chunai", "古风" to "gufeng", "异能" to "yineng", "悬疑" to "xuanyi", "剧情" to "juqing", "科幻" to "kehuan", "奇幻" to "qihuan", "玄幻" to "xuanhuan", "穿越" to "chuanyue", "冒险" to "mouxian", "推理" to "tuili", "武侠" to "wuxia", "格斗" to "gedou", "战争" to "zhanzheng", "热血" to "rexie", "搞笑" to "gaoxiao", "大女主" to "danuzhu", "都市" to "dushi", "总裁" to "zongcai", "后宫" to "hougong", "日常" to "richang", "韩漫" to "hanman", "少年" to "shaonian", "其它" to "qita")
+
 	override suspend fun getListPage(page: Int, filter: MangaListFilter?): List<Manga> {
 
 		when (filter) {
@@ -121,8 +123,8 @@ internal class Baozimh(context: MangaLoaderContext) :
 				title = div.selectFirstOrThrow(".comics-card__title h3").text(),
 				altTitle = null,
 				rating = RATING_UNKNOWN,
-				tags = emptySet(),
-				author = null,
+				tags = div.getElementsByTag("span").map { span -> MangaTag(span.text(), tags.getOrDefault(span.text(), "all"), source) }.toSet(),
+				author = div.selectFirst("small").text(),
 				state = null,
 				source = source,
 				isNsfw = isNsfwSource,
